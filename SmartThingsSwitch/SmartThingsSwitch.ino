@@ -60,7 +60,7 @@ void toggleDevice(const char * device) {
   SSLClient.println(ST_SERVER);
   SSLClient.println("User-Agent: Arduino/1.0");
   SSLClient.print("Authorization: Bearer ");
-  SSLClient.println(smartThingsToken);
+  SSLClient.println(SMARTTHINGS_TOKEN);
   SSLClient.println("Connection: close");
   SSLClient.println();
   SSLClient.println("{\"commands\":[{\"component\":\"main\",\"capability\":\"switch\",\"command\":\"on\"}]}");

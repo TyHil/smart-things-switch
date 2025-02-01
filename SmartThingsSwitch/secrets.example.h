@@ -1,4 +1,4 @@
 #define WIFI_SSID ""
 #define WIFI_PASSWORD ""
 
-#define smartThingsToken ""
+#define SMARTTHINGS_TOKEN ""
