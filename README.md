@@ -1,6 +1,6 @@
 # smart-things-switch
 
-A SmartThings light switch.
+An Arduino IoT SmartThings light switch.
 
 ## License
 

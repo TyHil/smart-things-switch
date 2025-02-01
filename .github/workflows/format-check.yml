@@ -1,4 +1,4 @@
-name: Format V1 Check
+name: Format Check
 
 on: 
   push:

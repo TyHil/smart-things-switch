@@ -1,4 +1,4 @@
-name: Compile V1 Check
+name: Compile Check
 
 on: 
   push:
