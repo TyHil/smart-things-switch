@@ -15,6 +15,10 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
+      - name: Create dummy secrets.h
+        run: |
+          mv SmartThingsSwitch/secrets.example.h SmartThingsSwitch/secrets.h
+
       - name: Compile
         uses: arduino/compile-sketches@v1
         with:
