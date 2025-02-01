@@ -1,0 +1,25 @@
+name: Compile V1 Check
+
+on: 
+  push:
+    paths:
+      - SmartThingsSwitch/**
+      - .github/workflows/compile-check.yml
+
+jobs:
+  main:
+    name: Compile
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Compile
+        uses: arduino/compile-sketches@v1
+        with:
+          sketch-paths: |
+            - SmartThingsSwitch
+          fqbn: "arduino:samd:nano_33_iot"
+          libraries: |
+            - name: WiFiNINA

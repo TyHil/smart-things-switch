@@ -1,0 +1,23 @@
+name: Format V1 Check
+
+on: 
+  push:
+    paths:
+      - SmartThingsSwitch/**
+      - .github/workflows/format-check.yml
+
+jobs:
+  main:
+    name: Format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Format
+        uses: DoozyX/clang-format-lint-action@v0.18
+        with:
+          source: "SmartThingsSwitch"
+          extensions: "cpp,h,ino"
+          clangFormatVersion: 14
