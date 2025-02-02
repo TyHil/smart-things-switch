@@ -8,35 +8,30 @@
 #define ST_SERVER "api.smartthings.com"
 #define SSL_PORT 443
 
-WiFiSSLClient SSLClient;
+WiFiSSLClient client;
 
 const char ALL_ON[] = "93c62696-9736-46a2-b7f9-80743479a8d6";
 const char ALL_OFF[] = "0ed3da72-dc00-484a-b960-429ff357e949";
 
 void connectWiFI() {
-  uint8_t connectAttempts = 15;
-  if (WiFi.status() == WL_CONNECTED) return;
-  //Serial.println("Connecting to WiFi");
+  digitalWrite(LED_BUILTIN, true);
+  uint8_t connectAttempts = 10;
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while ((WiFi.status() != WL_CONNECTED) && (connectAttempts)) {
-    //Serial.println("Connecting to WiFi");
+  while (WiFi.status() != WL_CONNECTED && connectAttempts) {
     connectAttempts--;
-    delay(500);
+    delay(1000);
   }
   if (!connectAttempts) {
-    //Serial.print("Unable to connect to "); Serial.println(WIFI_SSID);
     while (true) {
       digitalWrite(LED_BUILTIN, !(digitalRead(LED_BUILTIN)));
-      delay(100);
+      delay(250);
     }
   }
-  //Serial.print("Connected to WiFi "); Serial.println(WiFi.SSID());
   digitalWrite(LED_BUILTIN, false);
 }
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, true);
   pinMode(ON_PIN, INPUT_PULLUP);
   pinMode(OFF_PIN, INPUT_PULLUP);
   //Serial.begin(9600); //Serial.println();
@@ -44,24 +39,24 @@ void setup() {
 }
 
 void toggleDevice(const char * device) {
-  SSLClient.connect(ST_SERVER, SSL_PORT);
-  SSLClient.print("POST /v1/devices/");
-  SSLClient.print(device);
-  SSLClient.println("/commands HTTP/1.1");
-  SSLClient.print("Accept: ");
-  SSLClient.println("application/json");
-  SSLClient.println("Content-Type: application/json");
-  SSLClient.print("Content-Length: ");
-  SSLClient.println(72);
-  SSLClient.print("Host: ");
-  SSLClient.println(ST_SERVER);
-  SSLClient.println("User-Agent: Arduino/1.0");
-  SSLClient.print("Authorization: Bearer ");
-  SSLClient.println(SMARTTHINGS_TOKEN);
-  SSLClient.println("Connection: close");
-  SSLClient.println();
-  SSLClient.println("{\"commands\":[{\"component\":\"main\",\"capability\":\"switch\",\"command\":\"on\"}]}");
-  SSLClient.println();
+  client.connect(ST_SERVER, SSL_PORT);
+  client.print("POST /v1/devices/");
+  client.print(device);
+  client.println("/commands HTTP/1.1");
+  client.print("Accept: ");
+  client.println("application/json");
+  client.println("Content-Type: application/json");
+  client.print("Content-Length: ");
+  client.println(72);
+  client.print("Host: ");
+  client.println(ST_SERVER);
+  client.println("User-Agent: Arduino/1.0");
+  client.print("Authorization: Bearer ");
+  client.println(SMARTTHINGS_TOKEN);
+  client.println("Connection: close");
+  client.println();
+  client.println("{\"commands\":[{\"component\":\"main\",\"capability\":\"switch\",\"command\":\"on\"}]}");
+  client.println();
 }
 
 void loop() {
@@ -74,5 +69,9 @@ void loop() {
     digitalWrite(LED_BUILTIN, true);
     toggleDevice(ALL_OFF);
   }
+  /*while (client.available()) {
+    char c = client.read();
+    Serial.write(c);
+  }*/
   delay(100);
 }
