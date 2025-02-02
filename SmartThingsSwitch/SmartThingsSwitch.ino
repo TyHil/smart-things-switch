@@ -13,9 +13,6 @@ WiFiSSLClient SSLClient;
 const char ALL_ON[] = "93c62696-9736-46a2-b7f9-80743479a8d6";
 const char ALL_OFF[] = "0ed3da72-dc00-484a-b960-429ff357e949";
 
-unsigned long onTimer;
-unsigned long offTimer;
-
 void connectWiFI() {
   uint8_t connectAttempts = 15;
   if (WiFi.status() == WL_CONNECTED) return;
@@ -69,13 +66,11 @@ void toggleDevice(const char * device) {
 
 void loop() {
   digitalWrite(LED_BUILTIN, false);
-  if (millis() - onTimer >= 250 && !digitalRead(ON_PIN)) {
-    onTimer = millis();
+  if (!digitalRead(ON_PIN)) {
     digitalWrite(LED_BUILTIN, true);
     toggleDevice(ALL_ON);
   }
-  if (millis() - offTimer >= 250 && !digitalRead(OFF_PIN)) {
-    offTimer = millis();
+  if (!digitalRead(OFF_PIN)) {
     digitalWrite(LED_BUILTIN, true);
     toggleDevice(ALL_OFF);
   }
