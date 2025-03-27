@@ -8,34 +8,20 @@
 #define ST_SERVER "api.smartthings.com"
 #define SSL_PORT 443
 
+#define CONNECT_WAIT_SECONDS 10
+uint64_t timer = 0;
+
 WiFiSSLClient client;
 
 const char ALL_ON[] = "93c62696-9736-46a2-b7f9-80743479a8d6";
 const char ALL_OFF[] = "0ed3da72-dc00-484a-b960-429ff357e949";
-
-void connectWiFI() {
-  digitalWrite(LED_BUILTIN, true);
-  uint8_t connectAttempts = 10;
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED && connectAttempts) {
-    connectAttempts--;
-    delay(1000);
-  }
-  if (!connectAttempts) {
-    while (true) {
-      digitalWrite(LED_BUILTIN, !(digitalRead(LED_BUILTIN)));
-      delay(250);
-    }
-  }
-  digitalWrite(LED_BUILTIN, false);
-}
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(ON_PIN, INPUT_PULLUP);
   pinMode(OFF_PIN, INPUT_PULLUP);
   //Serial.begin(9600); //Serial.println();
-  connectWiFI();
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 }
 
 void toggleDevice(const char * device) {
@@ -60,18 +46,27 @@ void toggleDevice(const char * device) {
 }
 
 void loop() {
-  digitalWrite(LED_BUILTIN, false);
-  if (!digitalRead(ON_PIN)) {
-    digitalWrite(LED_BUILTIN, true);
-    toggleDevice(ALL_ON);
+  if (WiFi.status() != WL_CONNECTED) {
+    if (millis() - timer >= 1000 * CONNECT_WAIT_SECONDS) {
+      timer = millis();
+      WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    }
+    digitalWrite(LED_BUILTIN, !(digitalRead(LED_BUILTIN)));
+    delay(250);
+  } else {
+    digitalWrite(LED_BUILTIN, false);
+    if (!digitalRead(ON_PIN)) {
+      digitalWrite(LED_BUILTIN, true);
+      toggleDevice(ALL_ON);
+    }
+    if (!digitalRead(OFF_PIN)) {
+      digitalWrite(LED_BUILTIN, true);
+      toggleDevice(ALL_OFF);
+    }
+    /*while (client.available()) {
+      char c = client.read();
+      Serial.write(c);
+    }*/
+    delay(100);
   }
-  if (!digitalRead(OFF_PIN)) {
-    digitalWrite(LED_BUILTIN, true);
-    toggleDevice(ALL_OFF);
-  }
-  /*while (client.available()) {
-    char c = client.read();
-    Serial.write(c);
-  }*/
-  delay(100);
 }
